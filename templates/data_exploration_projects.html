@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Exploration Projects - Sanjana Devi</title>
+    
+    <!-- Google Fonts: Orbitron for headings, Rajdhani for body -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Rajdhani:wght@400;600&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Three.js for 3D background -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <style>
+        /* --- FUTURISTIC AIML THEME --- */
+        :root {
+            --bg-dark: #0a0a1a;
+            --primary-magenta: #ff00ff;
+            --secondary-cyan: #00ffff;
+            --text-light: #e0e0e0;
+            --text-muted: #a0a0a0;
+            --card-bg: rgba(20, 20, 40, 0.8);
+            --border-color: rgba(0, 255, 255, 0.2);
+            --notebook-bg: #161a28;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            font-family: 'Rajdhani', sans-serif; 
+            overflow-x: hidden;
+            margin: 0;
+            background-image: 
+                linear-gradient(rgba(0, 255, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 255, 0.05) 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+
+        h1, h2, h3, h4, h5, h6, .nav-link, .btn-cta {
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        #neural-canvas {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100vh; z-index: -1; opacity: 0.5;
+        }
+
+        header { 
+            position: sticky; 
+            top: 0; 
+            z-index: 50;
+            background-color: rgba(10, 10, 26, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+        }
+        nav {
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            max-width: 1200px; 
+            margin: auto; 
+            padding: 1rem 2rem;
+        }
+        nav a.nav-link {
+            position: relative; 
+            transition: color 0.3s ease; 
+            color: var(--text-muted); 
+            text-decoration: none; 
+            margin: 0 0.75rem;
+        }
+        nav a.nav-link::after {
+            content: ''; 
+            position: absolute; 
+            width: 0; 
+            height: 2px; 
+            bottom: -6px;
+            left: 50%; 
+            transform: translateX(-50%);
+            background: linear-gradient(90deg, var(--primary-magenta), var(--secondary-cyan));
+            transition: width 0.3s ease; 
+            border-radius: 2px;
+        }
+        nav a.nav-link.active, nav a.nav-link:hover {
+            color: white; 
+            text-shadow: 0 0 5px var(--secondary-cyan);
+        }
+        nav a.nav-link.active::after, nav a.nav-link:hover::after { width: 100%; }
+
+        .animate-on-scroll { 
+            opacity: 0; 
+            transform: translateY(30px); 
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out; 
+        }
+        .animate-on-scroll.is-visible { opacity: 1; transform: translateY(0); }
+
+        .text-primary { color: var(--primary-magenta); }
+        .text-secondary { color: var(--secondary-cyan); }
+        .text-muted { color: var(--text-muted); }
+        
+        /* --- NOTEBOOK STYLES --- */
+        .notebook-container {
+            background-color: var(--notebook-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            box-shadow: 0 0 25px rgba(0, 255, 255, 0.1);
+        }
+        .notebook-cell {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+        .cell-input-label {
+            font-family: monospace;
+            color: var(--text-muted);
+            padding: 0.75rem 0.5rem;
+            font-size: 0.9rem;
+        }
+        .cell-content {
+            flex-grow: 1;
+            border-left: 2px solid var(--primary-magenta);
+            padding-left: 1rem;
+        }
+        .markdown-cell {
+            padding: 0.75rem;
+            line-height: 1.7;
+            font-weight: 600;
+        }
+        .markdown-cell h4 {
+            font-size: 1.25rem;
+            color: var(--secondary-cyan);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.25rem;
+            margin-bottom: 0.5rem;
+        }
+        .code-cell {
+            background-color: #0c0f1a;
+            border-radius: 6px;
+            padding: 1rem;
+            font-family: monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            white-space: pre;
+        }
+        /* Syntax highlighting colors */
+        .code-cell .keyword { color: var(--primary-magenta); }
+        .code-cell .string { color: #9effa2; }
+        .code-cell .comment { color: #6a737d; }
+        .code-cell .function { color: var(--secondary-cyan); }
+        .code-cell .number { color: #79b8ff; }
+        
+        .cell-output {
+            padding: 1rem;
+            background-color: rgba(12, 15, 26, 0.5);
+            border-top: 1px dashed var(--border-color);
+            margin-top: 1rem;
+        }
+        .cell-output img {
+            max-width: 200px;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+        }
+
+    </style>
+</head>
+<body class="min-h-screen">
+    <canvas id="neural-canvas"></canvas>
+    <header>
+        <nav>
+            <a href="{{ url_for('home') }}" class="nav-link" style="margin-left:0; font-size: 1.5rem; font-weight: bold; color: white;">Sanjana Devi</a>
+            <div style="display:flex; align-items:center;">
+                <a href="{{ url_for('home') }}" class="nav-link">Home</a>
+                <a href="{{ url_for('about_me') }}" class="nav-link">About Me</a>
+                <a href="{{ url_for('journey') }}" class="nav-link active">Journey</a>
+                <a href="{{ url_for('blogs_page') }}" class="nav-link">Blogs</a>
+                <a href="{{ url_for('feedback') }}" class="nav-link">Feedback</a>
+                <a href="{{ url_for('codroidhub') }}" class="nav-link">CodroidHub</a>
+            </div>
+        </nav>
+    </header>
+
+    <main style="max-width: 1200px; margin: auto; padding: 3rem 1.5rem; position: relative; z-index: 10;">
+        <section id="data-exploration-page">
+            <a href="{{ url_for('journey') }}" class="nav-link text-secondary" style="display: inline-block; margin-bottom: 2rem; font-weight: 600;">
+                <i class="fas fa-arrow-left" style="margin-right: 0.5rem;"></i>Back to Journey
+            </a>
+            <h2 class="animate-on-scroll" style="font-size: 2.25rem; font-weight: bold; text-align: center; margin-bottom: 3rem;">Data Exploration & <span class="text-primary">Preprocessing</span></h2>
+            
+            <div class="notebook-container animate-on-scroll">
+                <!-- Cell 1: Introduction -->
+                <div class="notebook-cell">
+                    <div class="cell-input-label">In [1]:</div>
+                    <div class="cell-content markdown-cell">
+                        <h4>Project: Personalized Learning in Education</h4>
+                        <p>This notebook covers the initial steps of exploring and analyzing student learning patterns. The goal is to understand individual differences, identify learning gaps, and prepare the data for building personalized education models.</p>
+                    </div>
+                </div>
+
+                <!-- Cell 2: Importing Libraries -->
+                <div class="notebook-cell">
+                    <div class="cell-input-label">In [2]:</div>
+                    <div class="cell-content">
+                        <pre class="code-cell"><span class="comment"># Import necessary libraries</span>
+<span class="keyword">import</span> pandas <span class="keyword">as</span> pd
+<span class="keyword">import</span> numpy <span class="keyword">as</span> np
+<span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</pre>
+                    </div>
+                </div>
+
+                <!-- Cell 3: Loading Data -->
+                <div class="notebook-cell">
+                    <div class="cell-input-label">In [3]:</div>
+                    <div class="cell-content">
+                        <pre class="code-cell"><span class="comment"># Load the dataset</span>
+df = pd.<span class="function">read_csv</span>(<span class="string">'upi_transactions.csv'</span>)</pre>
+                    </div>
+                </div>
+
+                <!-- Cell 4: Initial Exploration -->
+                <div class="notebook-cell">
+                    <div class="cell-input-label">In [4]:</div>
+                    <div class="cell-content markdown-cell">
+                        <h4>Initial Data Exploration</h4>
+                        <p>First, let's look at the first few rows and check for missing values to get a basic understanding of the data.</p>
+                    </div>
+                </div>
+                
+                <!-- Cell 5: Code for Exploration -->
+                <div class="notebook-cell">
+                    <div class="cell-input-label">In [5]:</div>
+                    <div class="cell-content">
+                        <pre class="code-cell"><span class="comment"># Display first 5 rows</span>
+df.<span class="function">head</span>()
+
+<span class="comment"># Check for null values</span>
+df.<span class="function">isnull</span>().<span class="function">sum</span>()</pre>
+                    </div>
+                </div>
+                
+                <!-- Cell 6: Data Cleaning -->
+                <div class="notebook-cell">
+                    <div class="cell-input-label">In [6]:</div>
+                    <div class="cell-content markdown-cell">
+                        <h4>Data Cleaning & Transformation</h4>
+                        <p>The 'Date' column is an object type and needs to be converted to datetime. We'll also extract the year and month for easier time-based analysis.</p>
+                    </div>
+                </div>
+
+                <!-- Cell 7: Code for Cleaning -->
+                <div class="notebook-cell">
+                    <div class="cell-input-label">In [7]:</div>
+                    <div class="cell-content">
+                        <pre class="code-cell"><span class="comment"># Convert 'Date' column to datetime objects</span>
+df[<span class="string">'Date'</span>] = pd.<span class="function">to_datetime</span>(df[<span class="string">'Date'</span>])
+
+<span class="comment"># Extract Year and Month</span>
+df[<span class="string">'Year'</span>] = df[<span class="string">'Date'</span>].dt.year
+df[<span class="string">'Month'</span>] = df[<span class="string">'Date'</span>].dt.month</pre>
+                    </div>
+                </div>
+
+                <!-- Cell 8: Image Preprocessing Intro -->
+                <div class="notebook-cell">
+                    <div class="cell-input-label">In [8]:</div>
+                    <div class="cell-content markdown-cell">
+                        <h4>Image Data Preprocessing</h4>
+                        <p>For computer vision tasks, images must be normalized. This involves resizing them to a consistent dimension and converting them to grayscale to reduce complexity and focus on shapes and textures.</p>
+                    </div>
+                </div>
+
+                <!-- Cell 9: Code for Image Preprocessing -->
+                <div class="notebook-cell">
+                    <div class="cell-input-label">In [9]:</div>
+                    <div class="cell-content">
+                        <pre class="code-cell"><span class="comment"># Import image processing library</span>
+<span class="keyword">import</span> cv2
+
+<span class="comment"># Load an image</span>
+image = cv2.<span class="function">imread</span>(<span class="string">'path/to/your/image.jpg'</span>)
+
+<span class="comment"># Resize the image to 128x128 pixels</span>
+resized_image = cv2.<span class="function">resize</span>(image, (<span class="number">128</span>, <span class="number">128</span>))
+
+<span class="comment"># Convert the image to grayscale</span>
+gray_image = cv2.<span class="function">cvtColor</span>(resized_image, cv2.COLOR_BGR2GRAY)</pre>
+                        
+                        <div class="cell-output">
+                            <img src="https://placehold.co/200x200/161a28/e0e0e0?text=Processed+Image" alt="Processed Image">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cell 10: Conclusion -->
+                <div class="notebook-cell">
+                    <div class="cell-input-label">In [10]:</div>
+                    <div class="cell-content markdown-cell">
+                        <h4>Next Steps</h4>
+                        <p>With both the tabular and image data cleaned and preprocessed, the datasets are now ready for feature engineering and model training.</p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    </main>
+
+    <footer style="border-top: 1px solid var(--border-color); margin-top: 5rem; padding: 1.5rem 0;">
+        <div style="max-width: 1200px; margin: auto; text-align: center;" class="text-muted">
+            <p>&copy; 2025 Sanjana Devi. All Rights Reserved.</p>
+            <p>Training and Projects powered by <a href="{{ url_for('codroidhub') }}" class="text-secondary" style="text-decoration: none;">CodroidHub</a>.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            let observer;
+            function observeElements() {
+                if (observer) observer.disconnect();
+                const animatedElements = document.querySelectorAll('.animate-on-scroll');
+                observer = new IntersectionObserver(entries => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) entry.target.classList.add('is-visible');
+                    });
+                }, { threshold: 0.1 });
+                animatedElements.forEach(el => observer.observe(el));
+            }
+            observeElements();
+
+            const canvas = document.getElementById('neural-canvas');
+            if (canvas) {
+                const scene = new THREE.Scene();
+                const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+                const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true });
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                const particles = 1000;
+                const geometry = new THREE.BufferGeometry();
+                const positions = new Float32Array(particles * 3);
+                for (let i = 0; i < positions.length; i += 3) {
+                    positions[i] = (Math.random() - 0.5) * 10;
+                    positions[i + 1] = (Math.random() - 0.5) * 10;
+                    positions[i + 2] = (Math.random() - 0.5) * 10;
+                }
+                geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+                const material = new THREE.PointsMaterial({ color: 0x00ffff, size: 0.02, transparent: true, blending: THREE.AdditiveBlending });
+                const points = new THREE.Points(geometry, material);
+                scene.add(points);
+                const lineMaterial = new THREE.LineBasicMaterial({ color: 0xff00ff, transparent: true, opacity: 0.1 });
+                const lineGeometry = new THREE.BufferGeometry();
+                lineGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+                const lines = new THREE.LineSegments(lineGeometry, lineMaterial);
+                scene.add(lines);
+                camera.position.z = 5;
+                const mouse = new THREE.Vector2();
+                window.addEventListener('mousemove', (event) => {
+                    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+                    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+                });
+                function animate() {
+                    requestAnimationFrame(animate);
+                    points.rotation.x += 0.0005;
+                    points.rotation.y += 0.0005;
+                    lines.rotation.copy(points.rotation);
+                    camera.position.x += (mouse.x * 0.5 - camera.position.x) * 0.02;
+                    camera.position.y += (-mouse.y * 0.5 - camera.position.y) * 0.02;
+                    camera.lookAt(scene.position);
+                    renderer.render(scene, camera);
+                }
+                animate();
+                window.addEventListener('resize', () => {
+                    camera.aspect = window.innerWidth / window.innerHeight;
+                    camera.updateProjectionMatrix();
+                    renderer.setSize(window.innerWidth, window.innerHeight);
+                });
+            }
+        });
+    </script>
+</body>
+</html>

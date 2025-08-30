@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Problem Detail 2- Sanjana Devi</title>
+    
+    <!-- Google Fonts: Orbitron for headings, Rajdhani for body -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Rajdhani:wght@400;600&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Three.js for 3D background -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <style>
+        /* --- FUTURISTIC AIML THEME --- */
+        :root {
+            --bg-dark: #0a0a1a;
+            --primary-magenta: #ff00ff;
+            --secondary-cyan: #00ffff;
+            --text-light: #e0e0e0;
+            --text-muted: #a0a0a0;
+            --card-bg: rgba(20, 20, 40, 0.6);
+            --border-color: rgba(0, 255, 255, 0.2);
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            font-family: 'Rajdhani', sans-serif; 
+            overflow-x: hidden;
+            margin: 0;
+            background-image: 
+                linear-gradient(rgba(0, 255, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 255, 0.05) 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+
+        h1, h2, h3, h4, h5, h6, .nav-link, .btn-cta {
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        #neural-canvas {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100vh; z-index: -1; opacity: 0.5;
+        }
+
+        header { 
+            position: sticky; 
+            top: 0; 
+            z-index: 50;
+            background-color: rgba(10, 10, 26, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+        }
+        nav {
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            max-width: 1200px; 
+            margin: auto; 
+            padding: 1rem 2rem;
+        }
+        nav a.nav-link {
+            position: relative; 
+            transition: color 0.3s ease; 
+            color: var(--text-muted); 
+            text-decoration: none; 
+            margin: 0 0.75rem;
+        }
+        nav a.nav-link::after {
+            content: ''; 
+            position: absolute; 
+            width: 0; 
+            height: 2px; 
+            bottom: -6px;
+            left: 50%; 
+            transform: translateX(-50%);
+            background: linear-gradient(90deg, var(--primary-magenta), var(--secondary-cyan));
+            transition: width 0.3s ease; 
+            border-radius: 2px;
+        }
+        nav a.nav-link.active, nav a.nav-link:hover {
+            color: white; 
+            text-shadow: 0 0 5px var(--secondary-cyan);
+        }
+        nav a.nav-link.active::after, nav a.nav-link:hover::after { width: 100%; }
+
+        .animate-on-scroll { 
+            opacity: 0; 
+            transform: translateY(30px); 
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out; 
+        }
+        .animate-on-scroll.is-visible { opacity: 1; transform: translateY(0); }
+
+        .text-primary { color: var(--primary-magenta); }
+        .text-secondary { color: var(--secondary-cyan); }
+        .text-muted { color: var(--text-muted); }
+        
+        /* --- 4 W's Canvas Styles --- */
+        .problem-statement-header {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 1.5rem 2rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        .problem-statement-header h3 {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+        .problem-statement-header p {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-light);
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .ws-canvas {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 2px;
+            background-color: var(--border-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 0 25px rgba(0, 255, 255, 0.2);
+        }
+        .ws-quadrant {
+            background-color: var(--bg-dark);
+            padding: 2rem;
+            position: relative;
+            /* UPDATED: Flexbox layout for content */
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .ws-quadrant h4 {
+            font-size: 2rem;
+            color: var(--secondary-cyan);
+            opacity: 0.4;
+            /* UPDATED: Vertical text styling */
+            writing-mode: vertical-rl;
+            transform: rotate(180deg);
+            margin: 0;
+            line-height: 1;
+        }
+        
+        .ws-quadrant p {
+            font-size: 1.1rem;
+            font-weight: 600;
+            line-height: 1.7;
+        }
+
+    </style>
+</head>
+<body class="min-h-screen">
+    <canvas id="neural-canvas"></canvas>
+    <header>
+        <nav>
+            <a href="{{ url_for('home') }}" class="nav-link" style="margin-left:0; font-size: 1.5rem; font-weight: bold; color: white;">Sanjana Devi</a>
+            <div style="display:flex; align-items:center;">
+                <a href="{{ url_for('home') }}" class="nav-link">Home</a>
+                <a href="{{ url_for('about_me') }}" class="nav-link">About Me</a>
+                <a href="{{ url_for('journey') }}" class="nav-link active">Journey</a>
+                <a href="{{ url_for('blogs_page') }}" class="nav-link">Blogs</a>
+                <a href="{{ url_for('feedback') }}" class="nav-link">Feedback</a>
+                <a href="{{ url_for('codroidhub') }}" class="nav-link">CodroidHub</a>
+            </div>
+        </nav>
+    </header>
+
+    <main style="max-width: 1200px; margin: auto; padding: 3rem 1.5rem; position: relative; z-index: 10;">
+        <section id="problem-detail-page">
+            <a href="/journey/problem-scoping" class="nav-link text-secondary" style="display: inline-block; margin-bottom: 2rem; font-weight: 600;">
+                <i class="fas fa-arrow-left" style="margin-right: 0.5rem;"></i>Back to Problem Statements
+            </a>
+            <h2 class="animate-on-scroll" style="font-size: 2.25rem; font-weight: bold; text-align: center; margin-bottom: 3rem;">Problem Scoping: <span class="text-primary">Early Disease Detection in Healthcare</span></h2>
+            
+            <div class="animate-on-scroll" style="max-width: 900px; margin: auto;">
+                <div class="problem-statement-header">
+                    <h3>Problem Statement #2</h3>
+                    <p>How many lives could be saved if diseases were caught at the very beginning, before symptoms even appeared?</p>
+                </div>
+
+                <div class="ws-canvas">
+                    <div class="ws-quadrant">
+                        <h4>Who?</h4>
+                        <p>👩‍⚕️ Who benefits from early disease detection? Patients, who get timely treatment before the illness worsens. Doctors, who can diagnose more accurately and act faster. Families, who avoid emotional and financial stress. And healthcare providers and governments, who reduce long-term treatment costs and improve public health outcomes.</p>
+                    </div>
+                    <div class="ws-quadrant">
+                        <h4>What?</h4>
+                        <p>🩺 What makes early detection so critical? Many diseases—like cancer, diabetes, or heart conditions—often remain hidden until it’s too late. Traditional diagnosis comes after symptoms appear, which can reduce survival chances. With AI, wearable devices, and smart diagnostics, diseases can be detected at their earliest stages, improving recovery rates and saving lives.</p>
+                    </div>
+                    <div class="ws-quadrant">
+                        <h4>Where?</h4>
+                        <p>🌍 Where does this make the biggest difference? In hospitals and clinics, where AI-powered tools assist doctors. In rural areas, where access to healthcare is limited, mobile health apps can bridge the gap. Even in daily life, wearables like smartwatches continuously monitor health signals, making detection possible anytime, anywhere.</p>
+                    </div>
+                    <div class="ws-quadrant">
+                        <h4>Why?</h4>
+                        <p>❓Why is catching diseases early so important? Because early detection means faster treatment, lower costs, and higher survival rates. It also prevents diseases from spreading further, reduces strain on healthcare systems, and gives people a better quality of life.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer style="border-top: 1px solid var(--border-color); margin-top: 5rem; padding: 1.5rem 0;">
+        <div style="max-width: 1200px; margin: auto; text-align: center;" class="text-muted">
+            <p>&copy; 2025 Sanjana Devi. All Rights Reserved.</p>
+            <p>Training and Projects powered by <a href="codroidhub.html" class="text-secondary" style="text-decoration: none; hover:underline;">CodroidHub</a>.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            let observer;
+            function observeElements() {
+                if (observer) observer.disconnect();
+                const animatedElements = document.querySelectorAll('.animate-on-scroll');
+                observer = new IntersectionObserver(entries => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) entry.target.classList.add('is-visible');
+                    });
+                }, { threshold: 0.1 });
+                animatedElements.forEach(el => observer.observe(el));
+            }
+            observeElements();
+
+            const canvas = document.getElementById('neural-canvas');
+            if (canvas) {
+                const scene = new THREE.Scene();
+                const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+                const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true });
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                const particles = 1000;
+                const geometry = new THREE.BufferGeometry();
+                const positions = new Float32Array(particles * 3);
+                for (let i = 0; i < positions.length; i += 3) {
+                    positions[i] = (Math.random() - 0.5) * 10;
+                    positions[i + 1] = (Math.random() - 0.5) * 10;
+                    positions[i + 2] = (Math.random() - 0.5) * 10;
+                }
+                geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+                const material = new THREE.PointsMaterial({ color: 0x00ffff, size: 0.02, transparent: true, blending: THREE.AdditiveBlending });
+                const points = new THREE.Points(geometry, material);
+                scene.add(points);
+                const lineMaterial = new THREE.LineBasicMaterial({ color: 0xff00ff, transparent: true, opacity: 0.1 });
+                const lineGeometry = new THREE.BufferGeometry();
+                lineGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+                const lines = new THREE.LineSegments(lineGeometry, lineMaterial);
+                scene.add(lines);
+                camera.position.z = 5;
+                const mouse = new THREE.Vector2();
+                window.addEventListener('mousemove', (event) => {
+                    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+                    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+                });
+                function animate() {
+                    requestAnimationFrame(animate);
+                    points.rotation.x += 0.0005;
+                    points.rotation.y += 0.0005;
+                    lines.rotation.copy(points.rotation);
+                    camera.position.x += (mouse.x * 0.5 - camera.position.x) * 0.02;
+                    camera.position.y += (-mouse.y * 0.5 - camera.position.y) * 0.02;
+                    camera.lookAt(scene.position);
+                    renderer.render(scene, camera);
+                }
+                animate();
+                window.addEventListener('resize', () => {
+                    camera.aspect = window.innerWidth / window.innerHeight;
+                    camera.updateProjectionMatrix();
+                    renderer.setSize(window.innerWidth, window.innerHeight);
+                });
+            }
+        });
+    </script>
+</body>
+</html>

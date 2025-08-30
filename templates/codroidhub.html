@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CodroidHub Training - sanjana devi</title>
+
+    <!-- Google Fonts: Orbitron for headings, Rajdhani for body -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Rajdhani:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Font Awesome for Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+    <!-- Three.js for 3D background -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <style>
+      /* --- FUTURISTIC AIML THEME --- */
+      :root {
+        --bg-dark: #0a0a1a;
+        --primary-magenta: #ff00ff;
+        --secondary-cyan: #00ffff;
+        --text-light: #e0e0e0;
+        --text-muted: #a0a0a0;
+        --card-bg: rgba(20, 20, 40, 0.6);
+        --border-color: rgba(0, 255, 255, 0.2);
+      }
+
+      body {
+        background-color: var(--bg-dark);
+        color: var(--text-light);
+        font-family: "Rajdhani", sans-serif;
+        overflow-x: hidden;
+        margin: 0;
+        background-image: linear-gradient(
+            rgba(0, 255, 255, 0.05) 1px,
+            transparent 1px
+          ),
+          linear-gradient(90deg, rgba(0, 255, 255, 0.05) 1px, transparent 1px);
+        background-size: 30px 30px;
+      }
+
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6,
+      .nav-link,
+      .btn-cta {
+        font-family: "Orbitron", sans-serif;
+      }
+
+      #neural-canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        z-index: -1;
+        opacity: 0.5;
+      }
+
+      header {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        background-color: rgba(10, 10, 26, 0.8);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid var(--border-color);
+      }
+      nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        max-width: 1200px;
+        margin: auto;
+        padding: 1rem 2rem;
+      }
+      nav a.nav-link {
+        position: relative;
+        transition: color 0.3s ease;
+        color: var(--text-muted);
+        text-decoration: none;
+        margin: 0 0.75rem;
+      }
+      nav a.nav-link::after {
+        content: "";
+        position: absolute;
+        width: 0;
+        height: 2px;
+        bottom: -6px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: linear-gradient(
+          90deg,
+          var(--primary-magenta),
+          var(--secondary-cyan)
+        );
+        transition: width 0.3s ease;
+        border-radius: 2px;
+      }
+      nav a.nav-link.active,
+      nav a.nav-link:hover {
+        color: white;
+        text-shadow: 0 0 5px var(--secondary-cyan);
+      }
+      nav a.nav-link.active::after,
+      nav a.nav-link:hover::after {
+        width: 100%;
+      }
+
+      .animate-on-scroll {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+      }
+      .animate-on-scroll.is-visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .text-primary {
+        color: var(--primary-magenta);
+      }
+      .text-secondary {
+        color: var(--secondary-cyan);
+      }
+      .text-muted {
+        color: var(--text-muted);
+      }
+      .text-light {
+        color: var(--text-light);
+      }
+    </style>
+  </head>
+  <body class="min-h-screen">
+    <canvas id="neural-canvas"></canvas>
+    <header>
+      <nav>
+        <a
+          href="{{ url_for('home') }}"
+          class="nav-link"
+          style="
+            margin-left: 0;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+          "
+          >sanjana devi</a
+        >
+        <div style="display: flex; align-items: center">
+          <a href="{{ url_for('home') }}" class="nav-link">Home</a>
+          <a href="{{ url_for('about_me') }}" class="nav-link">About Me</a>
+          <a href="{{ url_for('journey') }}" class="nav-link">Journey</a>
+          <a href="{{ url_for('codroidhub') }}" class="nav-link active"
+            >CodroidHub</a
+          >
+          <a href="{{ url_for('blogs_page') }}" class="nav-link">Blogs</a>
+          <a href="{{ url_for('feedback') }}" class="nav-link">Feedback</a>
+          <a
+            href="https://www.linkedin.com/"
+            target="_blank"
+            class="nav-link"
+            style="font-size: 1.2rem"
+            aria-label="LinkedIn"
+            ><i class="fab fa-linkedin"></i
+          ></a>
+          <a
+            href="/github"
+            target="_blank"
+            class="nav-link"
+            style="font-size: 1.2rem"
+            aria-label="GitHub"
+            ><i class="fab fa-github"></i
+          ></a>
+        </div>
+      </nav>
+    </header>
+
+    <main
+      style="
+        max-width: 1200px;
+        margin: auto;
+        padding: 3rem 1.5rem;
+        position: relative;
+        z-index: 10;
+      "
+    >
+      <section id="codroidhub">
+        <h2
+          class="animate-on-scroll"
+          style="
+            font-size: 2.25rem;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 3rem;
+          "
+        >
+          Summer Training at <span class="text-secondary">CodroidHub</span>
+        </h2>
+        <div style="display: flex; gap: 24px">
+          <div
+            style="
+              display: grid;
+              grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+              gap: 3rem;
+            "
+          >
+            <div class="animate-on-scroll">
+              <div style="position: sticky; top: 100px; ">
+                <img
+                  src="https://placehold.co/600x450/0a0a1a/00ffff?text=Certificate"
+                  alt="CodroidHub Certificate"
+                  style="
+                    border-radius: 0.5rem;
+                    box-shadow: 0 0 25px rgba(0, 255, 255, 0.2);
+                    border: 2px solid var(--secondary-cyan);
+                    width: 100%;
+                  "
+                />
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    gap: 10px;
+                    padding: 20px;
+                  "
+                >
+                  <!-- Social Links -->
+                  <div style="display: flex; gap: 15px; margin-top: 10px">
+                    <a href="https://github.com/CodroidHubPrivateLimited" target="_blank">
+                      <img
+                        src="https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/github.svg"
+                        alt="GitHub"
+                        style="height: 30px; filter: invert(1)"
+                      />
+                    </a>
+                    <a
+                      href="https://www.linkedin.com/company/codroidhub/posts/"
+                      target="_blank"
+                    >
+                      <img
+                        src="https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/linkedin.svg"
+                        alt="LinkedIn"
+                        style="height: 30px; filter: invert(1)"
+                      />
+                    </a>
+                    <a href="https://codroidhub.com" target="_blank">
+                      <img
+                        src="https://cdn-icons-png.flaticon.com/512/25/25694.png"
+                        alt="Website"
+                        style="height: 30px; filter: invert(1)"
+                      />
+                    </a>
+                    <a
+                      href="https://www.instagram.com/codroidhub/"
+                      target="_blank"
+                    >
+                      <img
+                        src="https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/instagram.svg"
+                        alt="Instagram"
+                        style="height: 30px; filter: invert(1)"
+                      />
+                    </a>
+                    <a
+                      href="https://www.facebook.com/codroidhubpvtltd"
+                      target="_blank"
+                    >
+                      <img
+                        src="https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/facebook.svg"
+                        alt="Facebook"
+                        style="height: 30px; filter: invert(1)"
+                      />
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="animate-on-scroll" style="transition-delay: 100ms">
+              <p
+                class="text-light"
+                style="
+                  margin: 0;
+                  margin-bottom: 2rem;
+                  font-size: 1.5rem;
+                  line-height: 1.8;
+                  font-weight: 600;
+                "
+              >
+                CodroidHub Private Limited is a fast-growing EdTech and IT
+                solutions company with a strong presence in India and Nepal,
+                dedicated to transforming education and technology through
+                innovation, collaboration, and industry partnerships.
+              </p>
+              <h3
+                style="
+                  font-size: 1.8rem;
+                  font-weight: 600;
+                  margin-bottom: 1.5rem;
+                "
+                class="text-primary"
+              >
+                Mission
+              </h3>
+              <p
+                class="text-light"
+                style="
+                  margin-bottom: 2rem;
+                  font-size: 1.5rem;
+                  line-height: 1.8;
+                  font-weight: 600;
+                "
+              >
+                To empower learners, educators, and organizations by providing
+                accessible, industry-relevant, and technology-driven education
+                solutions, fostering innovation and creating a skilled workforce
+                prepared for the challenges of the digital era.
+              </p>
+              <h3
+                style="
+                  font-size: 1.8rem;
+                  font-weight: 600;
+                  margin-bottom: 1.5rem;
+                "
+                class="text-primary"
+              >
+                Vision
+              </h3>
+              <p
+                class="text-light"
+                style="
+                  margin-bottom: 2rem;
+                  font-size: 1.5rem;
+                  line-height: 1.8;
+                  font-weight: 600;
+                "
+              >
+                To become a global leader in EdTech and IT innovation, bridging
+                the gap between education and industry by building a sustainable
+                ecosystem of learning, technology, and entrepreneurship that
+                impacts lives across borders.
+              </p>
+              <h3
+                style="
+                  font-size: 1.8rem;
+                  font-weight: 600;
+                  margin-bottom: 1.5rem;
+                "
+                class="text-primary"
+              >
+                The company specializes in:
+              </h3>
+              <ul style="list-style: none; padding-left: 0; space-y: 1.5rem">
+                <li
+                  style="display: flex; align-items: flex-start; gap: 0.75rem"
+                >
+                  <i
+                    class="fas fa-check-circle text-secondary"
+                    style="margin-top: 5px"
+                  ></i>
+                  <span
+                    class="text-light"
+                    style="font-weight: 600; font-size: 1.25rem"
+                    >EdTech Solutions: K-12 STEM & coding curriculum,
+                    industry-aligned skilling programs, and AI/ML upskilling
+                    initiatives.
+                  </span>
+                </li>
+                <li
+                  style="display: flex; align-items: flex-start; gap: 0.75rem"
+                >
+                  <i
+                    class="fas fa-check-circle text-secondary"
+                    style="margin-top: 5px"
+                  ></i>
+                  <span
+                    class="text-light"
+                    style="font-weight: 600; font-size: 1.25rem"
+                    >IT Services: Web & mobile application development, game
+                    design, and AI/ML-driven enterprise solutions.</span
+                  >
+                </li>
+                <li
+                  style="display: flex; align-items: flex-start; gap: 0.75rem"
+                >
+                  <i
+                    class="fas fa-check-circle text-secondary"
+                    style="margin-top: 5px"
+                  ></i>
+                  <span
+                    class="text-light"
+                    style="font-weight: 600; font-size: 1.25rem"
+                  >
+                    Training & Skilling Programs: Bootcamps, summer industrial
+                    training, workshops, and hybrid learning models with
+                    hands-on projects.
+                  </span>
+                </li>
+                <li
+                  style="display: flex; align-items: flex-start; gap: 0.75rem"
+                >
+                  <i
+                    class="fas fa-check-circle text-secondary"
+                    style="margin-top: 5px"
+                  ></i>
+                  <span
+                    class="text-light"
+                    style="font-weight: 600; font-size: 1.25rem"
+                    >Industry Integration: LMS-driven learning journeys, global
+                    certifications, and project-based internships.</span
+                  >
+                </li>
+              </ul>
+              <h3
+                style="
+                  font-size: 1.8rem;
+                  font-weight: 600;
+                  margin-bottom: 1.5rem;
+                "
+                class="text-primary"
+              >
+                Key Takeaways
+              </h3>
+              <ul style="list-style: none; padding-left: 0; space-y: 1.5rem">
+                <li
+                  style="display: flex; align-items: flex-start; gap: 0.75rem"
+                >
+                  <i
+                    class="fas fa-check-circle text-secondary"
+                    style="margin-top: 5px"
+                  ></i>
+                  <span
+                    class="text-light"
+                    style="font-weight: 600; font-size: 1.25rem"
+                    >15+ collaborations with leading colleges and schools for
+                    curriculum integration, research support, and skilling
+                    programs.</span
+                  >
+                </li>
+                <li
+                  style="display: flex; align-items: flex-start; gap: 0.75rem"
+                >
+                  <i
+                    class="fas fa-check-circle text-secondary"
+                    style="margin-top: 5px"
+                  ></i>
+                  <span
+                    class="text-light"
+                    style="font-weight: 600; font-size: 1.25rem"
+                    >5+ global IT industry partnerships driving innovation in
+                    AI, data analytics, and product development.</span
+                  >
+                </li>
+                <li
+                  style="display: flex; align-items: flex-start; gap: 0.75rem"
+                >
+                  <i
+                    class="fas fa-check-circle text-secondary"
+                    style="margin-top: 5px"
+                  ></i>
+                  <span
+                    class="text-light"
+                    style="font-weight: 600; font-size: 1.25rem"
+                    >Multi-disciplinary expertise in emerging technologies such
+                    as Generative AI, Cloud Computing, Big Data, AR/VR, and
+                    Cybersecurity.</span
+                  >
+                </li>
+                <li
+                  style="display: flex; align-items: flex-start; gap: 0.75rem"
+                >
+                  <i
+                    class="fas fa-check-circle text-secondary"
+                    style="margin-top: 5px"
+                  ></i>
+                  <span
+                    class="text-light"
+                    style="font-weight: 600; font-size: 1.25rem"
+                    >Flagship initiatives like Skill Yatra, AI for Your Work,
+                    and Coding for Schools, empowering learners from school
+                    level to professionals.</span
+                  >
+                </li>
+                <li
+                  style="display: flex; align-items: flex-start; gap: 0.75rem"
+                >
+                  <i
+                    class="fas fa-check-circle text-secondary"
+                    style="margin-top: 5px"
+                  ></i>
+                  <span
+                    class="text-light"
+                    style="font-weight: 600; font-size: 1.25rem"
+                    >A growing footprint across India and Nepal with an
+                    expanding ecosystem of educators, mentors, and industry
+                    experts.</span
+                  >
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer
+      style="
+        border-top: 1px solid var(--border-color);
+        margin-top: 5rem;
+        padding: 1.5rem 0;
+      "
+    >
+      <div
+        style="max-width: 1200px; margin: auto; text-align: center"
+        class="text-muted"
+      >
+        <p>&copy; 2025 sanjana devi. All Rights Reserved.</p>
+        <p>
+          Training and Projects powered by
+          <a
+            href="/codroidhub"
+            class="text-secondary"
+            style="text-decoration: none; hover: underline"
+            >CodroidHub</a
+          >.
+        </p>
+      </div>
+    </footer>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        let observer;
+        function observeElements() {
+          if (observer) observer.disconnect();
+          const animatedElements =
+            document.querySelectorAll(".animate-on-scroll");
+          observer = new IntersectionObserver(
+            (entries) => {
+              entries.forEach((entry) => {
+                if (entry.isIntersecting)
+                  entry.target.classList.add("is-visible");
+              });
+            },
+            { threshold: 0.1 }
+          );
+          animatedElements.forEach((el) => observer.observe(el));
+        }
+        observeElements();
+
+        const canvas = document.getElementById("neural-canvas");
+        if (canvas) {
+          const scene = new THREE.Scene();
+          const camera = new THREE.PerspectiveCamera(
+            75,
+            window.innerWidth / window.innerHeight,
+            0.1,
+            1000
+          );
+          const renderer = new THREE.WebGLRenderer({
+            canvas: canvas,
+            alpha: true,
+          });
+          renderer.setSize(window.innerWidth, window.innerHeight);
+          const particles = 1000;
+          const geometry = new THREE.BufferGeometry();
+          const positions = new Float32Array(particles * 3);
+          for (let i = 0; i < positions.length; i += 3) {
+            positions[i] = (Math.random() - 0.5) * 10;
+            positions[i + 1] = (Math.random() - 0.5) * 10;
+            positions[i + 2] = (Math.random() - 0.5) * 10;
+          }
+          geometry.setAttribute(
+            "position",
+            new THREE.BufferAttribute(positions, 3)
+          );
+          const material = new THREE.PointsMaterial({
+            color: 0x00ffff,
+            size: 0.02,
+            transparent: true,
+            blending: THREE.AdditiveBlending,
+          });
+          const points = new THREE.Points(geometry, material);
+          scene.add(points);
+          const lineMaterial = new THREE.LineBasicMaterial({
+            color: 0xff00ff,
+            transparent: true,
+            opacity: 0.1,
+          });
+          const lineGeometry = new THREE.BufferGeometry();
+          lineGeometry.setAttribute(
+            "position",
+            new THREE.BufferAttribute(positions, 3)
+          );
+          const lines = new THREE.LineSegments(lineGeometry, lineMaterial);
+          scene.add(lines);
+          camera.position.z = 5;
+          const mouse = new THREE.Vector2();
+          window.addEventListener("mousemove", (event) => {
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+          });
+          function animate() {
+            requestAnimationFrame(animate);
+            points.rotation.x += 0.0005;
+            points.rotation.y += 0.0005;
+            lines.rotation.copy(points.rotation);
+            camera.position.x += (mouse.x * 0.5 - camera.position.x) * 0.02;
+            camera.position.y += (-mouse.y * 0.5 - camera.position.y) * 0.02;
+            camera.lookAt(scene.position);
+            renderer.render(scene, camera);
+          }
+          animate();
+          window.addEventListener("resize", () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+          });
+        }
+      });
+    </script>
+  </body>
+</html>

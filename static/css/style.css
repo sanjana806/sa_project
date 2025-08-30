@@ -1,0 +1,169 @@
+/* --- FUTURISTIC AIML THEME --- */
+:root {
+    --bg-dark: #0a0a1a;
+    --primary-magenta: #ff00ff;
+    --secondary-cyan: #00ffff;
+    --text-light: #e0e0e0;
+    --text-muted: #a0a0a0;
+    --card-bg: rgba(20, 20, 40, 0.5);
+    --border-color: rgba(0, 255, 255, 0.2);
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-light);
+    font-family: 'Poppins', sans-serif;
+    overflow-x: hidden;
+    background-image: 
+        linear-gradient(rgba(0, 255, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 255, 255, 0.05) 1px, transparent 1px);
+    background-size: 30px 30px;
+}
+
+/* --- 3D Background Canvas --- */
+#neural-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    z-index: -1;
+    opacity: 0.5;
+}
+
+/* --- Floating Brain Animation --- */
+.floating-brain-container {
+    animation: float 6s ease-in-out infinite;
+    filter: drop-shadow(0 0 25px rgba(255, 0, 255, 0.4));
+}
+
+@keyframes float {
+    0% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-20px);
+    }
+    100% {
+        transform: translateY(0px);
+    }
+}
+
+/* --- Navigation --- */
+nav {
+    width: 100%;
+    background: rgba(10, 10, 26, 0.85);
+    box-shadow: 0 2px 16px 0 rgba(0,255,255,0.04);
+    border-bottom: 1px solid var(--border-color);
+}
+nav .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+}
+nav a.nav-link {
+    position: relative;
+    transition: color 0.3s ease;
+    color: var(--text-muted);
+    font-size: 1.08rem;
+    padding: 6px 12px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    display: inline-block;
+}
+nav a.nav-link::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(90deg, var(--primary-magenta), var(--secondary-cyan));
+    transition: width 0.3s ease;
+    border-radius: 2px;
+}
+nav a.nav-link.active, nav a.nav-link:hover {
+    color: white;
+    text-shadow: 0 0 5px var(--secondary-cyan);
+}
+nav a.nav-link.active::after, nav a.nav-link:hover::after {
+    width: 100%;
+}
+nav .flex.items-center.space-x-4 {
+    gap: 1.25rem;
+}
+
+/* --- Main Content Alignment --- */
+main.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-left: 24px;
+    padding-right: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* --- Cards --- */
+.card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    backdrop-filter: blur(5px);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+.card:hover {
+    transform: translateY(-8px);
+    border-color: var(--primary-magenta);
+    box-shadow: 0 0 20px rgba(255, 0, 255, 0.3), 0 0 30px rgba(0, 255, 255, 0.2);
+}
+
+/* --- Button --- */
+.btn-cta {
+    background: linear-gradient(90deg, var(--primary-magenta), var(--secondary-cyan));
+    color: white;
+    padding: 12px 28px;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(255, 0, 255, 0.2);
+    border: none;
+}
+.btn-cta:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 7px 25px rgba(255, 0, 255, 0.4);
+}
+
+/* --- Typing Effect Cursor --- */
+.type-cursor { 
+    display: inline-block;
+    width: 3px;
+    height: 1em;
+    vertical-align: middle;
+    background-color: var(--secondary-cyan); 
+    animation: blink 0.7s infinite; 
+}
+@keyframes blink { 50% { opacity: 0; } }
+
+/* --- Scroll Animations --- */
+.animate-on-scroll { 
+    opacity: 0; 
+    transform: translateY(30px); 
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out; 
+}
+.animate-on-scroll.is-visible { 
+    opacity: 1; 
+    transform: translateY(0); 
+}
+
+/* --- Utility Classes --- */
+.text-primary { color: var(--primary-magenta); }
+.text-secondary { color: var(--secondary-cyan); }
+.border-border-color { border-color: var(--border-color); }
+.text-muted { color: var(--text-muted); }
