@@ -1,2 +1,3 @@
-pandas
-matploi
+Pandas
+Matplotlib
+Flask
