@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Mastermind - Color Version</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      color: white;
+      text-align: center;
+      background: linear-gradient(135deg, #000000, #001f3f, #003366, #000000);
+      background-size: 400% 400%;
+      animation: gradientBG 15s ease infinite;
+    }
+
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    h1 {
+      margin: 20px 0;
+      text-shadow: 2px 2px 5px black;
+    }
+
+    #game {
+      max-width: 600px;
+      margin: auto;
+      padding: 20px;
+      background: rgba(0,0,0,0.6);
+      border-radius: 15px;
+      box-shadow: 0 0 15px rgba(0, 0, 255, 0.7);
+    }
+
+    #instructions {
+      text-align: left;
+      background: rgba(255,255,255,0.1);
+      padding: 10px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      font-size: 14px;
+    }
+
+    .color-options {
+      margin: 10px 0;
+    }
+
+    .color-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: none;
+      margin: 5px;
+      cursor: pointer;
+      outline: none;
+    }
+
+    #guessArea {
+      margin: 15px 0;
+    }
+
+    .slot {
+      display: inline-block;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      margin: 5px;
+      background: #222;
+      border: 2px solid white;
+      vertical-align: middle;
+    }
+
+    button#submit, button#restart {
+      margin-top: 15px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      background: #0066cc;
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    button#submit:hover, button#restart:hover {
+      background: #004c99;
+    }
+
+    #result {
+      margin-top: 10px;
+      font-size: 16px;
+    }
+
+    #history {
+      margin-top: 20px;
+      text-align: left;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .attempt {
+      padding: 8px;
+      margin: 5px 0;
+      background: rgba(255,255,255,0.1);
+      border-radius: 6px;
+    }
+
+    .feedback {
+      font-size: 14px;
+      color: #ffcc00;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎨 Mastermind (Color Version)</h1>
+  <div id="game">
+
+    <div id="instructions">
+      <h3>How to Play</h3>
+      <ul>
+        <li>The computer secretly chooses 4 colors (from 6 options). Colors may repeat.</li>
+        <li>Your task is to guess the exact color code.</li>
+        <li>Click on colors to fill the 4 slots, then press <b>Submit Guess</b>.</li>
+        <li>Feedback is given:
+          <ul>
+            <li><b>✔ Correct Place</b> → right color in the right position.</li>
+            <li><b>🎨 Correct Color</b> → right color but wrong position.</li>
+          </ul>
+        </li>
+        <li>Keep guessing until you find the secret code!</li>
+      </ul>
+    </div>
+
+    <div class="color-options">
+      <button class="color-btn" style="background:red" onclick="chooseColor('red')"></button>
+      <button class="color-btn" style="background:blue" onclick="chooseColor('blue')"></button>
+      <button class="color-btn" style="background:green" onclick="chooseColor('green')"></button>
+      <button class="color-btn" style="background:yellow" onclick="chooseColor('yellow')"></button>
+      <button class="color-btn" style="background:purple" onclick="chooseColor('purple')"></button>
+      <button class="color-btn" style="background:orange" onclick="chooseColor('orange')"></button>
+    </div>
+
+    <div id="guessArea">
+      <div class="slot" id="slot0"></div>
+      <div class="slot" id="slot1"></div>
+      <div class="slot" id="slot2"></div>
+      <div class="slot" id="slot3"></div>
+    </div>
+
+    <button id="submit" onclick="submitGuess()">Submit Guess</button>
+    <button id="restart" onclick="restartGame()" style="display:none;">Play Again</button>
+
+    <div id="result"></div>
+    <div id="history"></div>
+  </div>
+
+  <script>
+    const colors = ["red","blue","green","yellow","purple","orange"];
+    let secret = [];
+    let currentGuess = [];
+    let attempts = 0;
+
+    function generateCode() {
+      secret = [];
+      for (let i = 0; i < 4; i++) {
+        secret.push(colors[Math.floor(Math.random() * colors.length)]);
+      }
+      console.log("Secret:", secret); // for testing/debugging
+    }
+
+    generateCode();
+
+    function chooseColor(color) {
+      if (currentGuess.length < 4) {
+        currentGuess.push(color);
+        let slot = document.getElementById("slot" + (currentGuess.length - 1));
+        slot.style.background = color;
+      }
+    }
+
+    function submitGuess() {
+      if (currentGuess.length < 4) {
+        alert("Choose 4 colors!");
+        return;
+      }
+      attempts++;
+
+      let correctPlace = 0;
+      let correctColor = 0;
+      let secretCopy = [...secret];
+      let guessCopy = [...currentGuess];
+
+      for (let i = 0; i < 4; i++) {
+        if (guessCopy[i] === secretCopy[i]) {
+          correctPlace++;
+          secretCopy[i] = null;
+          guessCopy[i] = null;
+        }
+      }
+
+      for (let i = 0; i < 4; i++) {
+        if (guessCopy[i] && secretCopy.includes(guessCopy[i])) {
+          correctColor++;
+          secretCopy[secretCopy.indexOf(guessCopy[i])] = null;
+        }
+      }
+
+      let history = document.getElementById("history");
+      let attemptDiv = document.createElement("div");
+      attemptDiv.className = "attempt";
+
+      let guessHTML = currentGuess.map(c => `<span style="display:inline-block;width:20px;height:20px;border-radius:50%;background:${c};margin:2px;"></span>`).join("");
+      attemptDiv.innerHTML = `Attempt ${attempts}: ${guessHTML} 
+        <div class="feedback">✔ ${correctPlace} correct place, 🎨 ${correctColor} correct color</div>`;
+
+      history.appendChild(attemptDiv);
+
+      if (correctPlace === 4) {
+        document.getElementById("result").innerHTML = `<strong>🎉 You cracked the code in ${attempts} attempts!</strong>`;
+        document.getElementById("submit").disabled = true;
+        document.getElementById("restart").style.display = "inline-block";
+      }
+
+      currentGuess = [];
+      for (let i = 0; i < 4; i++) {
+        document.getElementById("slot"+i).style.background = "#222";
+      }
+    }
+
+    function restartGame() {
+      attempts = 0;
+      currentGuess = [];
+      generateCode();
+      document.getElementById("history").innerHTML = "";
+      document.getElementById("result").innerHTML = "";
+      document.getElementById("submit").disabled = false;
+      document.getElementById("restart").style.display = "none";
+      for (let i = 0; i < 4; i++) {
+        document.getElementById("slot"+i).style.background = "#222";
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Journey - Sanjana Devi</title>
+
+    <!-- Google Fonts: Orbitron for headings, Rajdhani for body -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Rajdhani:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Font Awesome for Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+    <!-- Three.js for 3D background -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <style>
+      /* --- FUTURISTIC AIML THEME --- */
+      :root {
+        --bg-dark: #0a0a1a;
+        --primary-magenta: #ff00ff;
+        --secondary-cyan: #00ffff;
+        --text-light: #e0e0e0;
+        --text-muted: #a0a0a0;
+        --card-bg: rgba(20, 20, 40, 0.6);
+        --border-color: rgba(0, 255, 255, 0.2);
+      }
+
+      body {
+        background-color: var(--bg-dark);
+        color: var(--text-light);
+        font-family: "Rajdhani", sans-serif;
+        overflow-x: hidden;
+        margin: 0;
+        background-image: linear-gradient(
+            rgba(0, 255, 255, 0.05) 1px,
+            transparent 1px
+          ),
+          linear-gradient(90deg, rgba(0, 255, 255, 0.05) 1px, transparent 1px);
+        background-size: 30px 30px;
+      }
+
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6,
+      .nav-link,
+      .btn-cta {
+        font-family: "Orbitron", sans-serif;
+      }
+
+      #neural-canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        z-index: -1;
+        opacity: 0.5;
+      }
+
+      header {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        background-color: rgba(10, 10, 26, 0.8);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid var(--border-color);
+      }
+      nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        max-width: 1200px;
+        margin: auto;
+        padding: 1rem 2rem;
+      }
+      nav a.nav-link {
+        position: relative;
+        transition: color 0.3s ease;
+        color: var(--text-muted);
+        text-decoration: none;
+        margin: 0 0.75rem;
+      }
+      nav a.nav-link::after {
+        content: "";
+        position: absolute;
+        width: 0;
+        height: 2px;
+        bottom: -6px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: linear-gradient(
+          90deg,
+          var(--primary-magenta),
+          var(--secondary-cyan)
+        );
+        transition: width 0.3s ease;
+        border-radius: 2px;
+      }
+      nav a.nav-link.active,
+      nav a.nav-link:hover {
+        color: white;
+        text-shadow: 0 0 5px var(--secondary-cyan);
+      }
+      nav a.nav-link.active::after,
+      nav a.nav-link:hover::after {
+        width: 100%;
+      }
+
+      .animate-on-scroll {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+      }
+      .animate-on-scroll.is-visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .text-primary {
+        color: var(--primary-magenta);
+      }
+      .text-secondary {
+        color: var(--secondary-cyan);
+      }
+      .text-muted {
+        color: var(--text-muted);
+      }
+
+      /* --- TIMELINE CONTAINER STYLES --- */
+      .timeline-container {
+        position: relative;
+        max-width: 900px;
+        margin: 0 auto;
+      }
+      .timeline-container::after {
+        content: "";
+        position: absolute;
+        width: 4px;
+        background: var(--border-color);
+        box-shadow: 0 0 10px var(--secondary-cyan);
+        top: 0;
+        bottom: 0;
+        left: 50%;
+        margin-left: -2px;
+        z-index: 1;
+      }
+
+      .timeline-item {
+        padding: 10px 40px;
+        position: relative;
+        background-color: inherit;
+        width: 50%;
+      }
+      .timeline-item .icon {
+        position: absolute;
+        width: 50px;
+        height: 50px;
+        right: -25px;
+        background-color: var(--primary-magenta);
+        border: 4px solid var(--secondary-cyan);
+        top: 15px;
+        border-radius: 50%;
+        z-index: 10;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 1.5rem;
+        color: white;
+        box-shadow: 0 0 15px var(--primary-magenta);
+      }
+
+      .timeline-item.left {
+        left: -80px;
+      }
+      .timeline-item.right {
+        left: 50%;
+      }
+
+      .timeline-item.right .icon {
+        left: -25px;
+      }
+
+      .timeline-content {
+        padding: 20px 30px;
+        background-color: var(--card-bg);
+        border: 1px solid var(--border-color);
+        position: relative;
+        border-radius: 8px;
+        backdrop-filter: blur(5px);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      .timeline-item:hover .timeline-content {
+        transform: scale(1.03);
+        box-shadow: 0 0 20px var(--secondary-cyan);
+      }
+
+      .timeline-content h3 {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+        color: var(--secondary-cyan);
+      }
+      .timeline-content p {
+        font-size: 1rem;
+        line-height: 1.6;
+        color: var(--text-light);
+        font-weight: 600;
+      }
+
+      /* --- NEW: VIEW PROJECTS BUTTON --- */
+      .view-projects-btn {
+        display: inline-block;
+        margin-top: 1rem;
+        padding: 0.5rem 1rem;
+        font-family: "Orbitron", sans-serif;
+        font-weight: 600;
+        color: var(--primary-magenta);
+        border: 1px solid var(--primary-magenta);
+        border-radius: 6px;
+        text-decoration: none;
+        opacity: 0; /* Hidden by default */
+        visibility: hidden;
+        transform: translateY(10px);
+        transition: all 0.4s ease;
+      }
+
+      .timeline-item:hover .view-projects-btn {
+        opacity: 1; /* Visible on hover */
+        visibility: visible;
+        transform: translateY(0);
+      }
+
+      .view-projects-btn:hover {
+        background-color: var(--primary-magenta);
+        color: white;
+        box-shadow: 0 0 15px var(--primary-magenta);
+      }
+
+      @media screen and (max-width: 768px) {
+        .timeline-container::after {
+          left: 31px;
+        }
+        .timeline-item {
+          width: 100%;
+          padding-left: 70px;
+          padding-right: 25px;
+        }
+        .timeline-item.left,
+        .timeline-item.right {
+          left: 0%;
+        }
+        .timeline-item .icon,
+        .timeline-item.right .icon {
+          left: 6px;
+        }
+      }
+    </style>
+  </head>
+  <body class="min-h-screen">
+    <canvas id="neural-canvas"></canvas>
+    <header>
+      <nav>
+        <a
+          href="{{ url_for('home') }}"
+          class="nav-link"
+          style="
+            margin-left: 0;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+          "
+          >Sanjana Devi</a
+        >
+        <div style="display: flex; align-items: center">
+          <a href="{{ url_for('home') }}" class="nav-link">Home</a>
+          <a href="{{ url_for('about_me') }}" class="nav-link">About Me</a>
+          <a href="{{ url_for('journey') }}" class="nav-link active">Journey</a>
+          <a href="{{ url_for('blogs_page') }}" class="nav-link">Blogs</a>
+          <a href="{{ url_for('feedback') }}" class="nav-link">Feedback</a>
+          <a href="{{ url_for('codroidhub') }}" class="nav-link">CodroidHub</a>
+          <a
+            href="https://www.linkedin.com/"
+            target="_blank"
+            class="nav-link"
+            style="font-size: 1.2rem"
+            aria-label="LinkedIn"
+            ><i class="fab fa-linkedin"></i
+          ></a>
+          <a
+            href="/github"
+            target="_blank"
+            class="nav-link"
+            style="font-size: 1.2rem"
+            aria-label="GitHub"
+            ><i class="fab fa-github"></i
+          ></a>
+        </div>
+      </nav>
+    </header>
+
+    <main
+      style="
+        max-width: 1200px;
+        margin: auto;
+        padding: 3rem 1.5rem;
+        position: relative;
+        z-index: 10;
+      "
+    >
+      <section id="journey">
+        <h2
+          class="animate-on-scroll"
+          style="
+            font-size: 2.25rem;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 1rem;
+          "
+        >
+          AI Project <span class="text-secondary">Lifecycle</span>
+        </h2>
+
+        <p
+          class="animate-on-scroll text-muted"
+          style="
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto 4rem auto;
+            font-size: 1.1rem;
+            font-weight: 600;
+          "
+        >
+          Every successful AI project follows a structured path from an idea to
+          a functional solution. This timeline outlines the critical stages of
+          the machine learning lifecycle.
+        </p>
+
+        <div class="timeline-container">
+          <!-- Step 1: Problem Scoping -->
+          <div class="timeline-item left animate-on-scroll">
+            <div class="icon"><i class="fas fa-search"></i></div>
+            <div class="timeline-content">
+              <h3>Problem Scoping</h3>
+              <p>
+                This initial phase is about understanding the 'why'. We define
+                the business objective and establish success metrics to ensure
+                the AI solution aligns perfectly with the end goal.
+              </p>
+              <a
+                href="{{ url_for('problem_scoping') }}"
+                class="view-projects-btn"
+                >View Projects <i class="fas fa-arrow-right"></i
+              ></a>
+            </div>
+          </div>
+
+          <!-- Step 2: Data Acquisition -->
+          <div class="timeline-item right animate-on-scroll">
+            <div class="icon"><i class="fas fa-database"></i></div>
+            <div class="timeline-content">
+              <h3>Data Acquisition</h3>
+              <p>
+                Once the problem is defined, we identify and gather the
+                necessary raw data. This can involve querying databases,
+                connecting to APIs, or scraping information from the web.
+              </p>
+              <a
+                href="{{ url_for('data_acquisition') }}"
+                class="view-projects-btn"
+                >View Projects <i class="fas fa-arrow-right"></i
+              ></a>
+            </div>
+          </div>
+
+          <!-- Step 3: Data Exploration & Preprocessing -->
+          <div class="timeline-item left animate-on-scroll">
+            <div class="icon"><i class="fas fa-cogs"></i></div>
+            <div class="timeline-content">
+              <h3>Data Exploration & Preprocessing</h3>
+              <p>
+                The most time-consuming stage, where raw data is transformed
+                into a usable format. It involves EDA, handling missing values,
+                cleaning inconsistencies, and structuring data.
+              </p>
+              <a
+                href="{{ url_for('data_exploration') }}"
+                class="view-projects-btn"
+                >View Projects <i class="fas fa-arrow-right"></i
+              ></a>
+            </div>
+          </div>
+
+          <!-- Step 4: Modeling & Evaluation -->
+          <div class="timeline-item right animate-on-scroll">
+            <div class="icon"><i class="fas fa-brain"></i></div>
+            <div class="timeline-content">
+              <h3>Modeling & Evaluation</h3>
+              <p>
+                Here, we select algorithms, train models, and fine-tune
+                parameters. Each model is rigorously evaluated against metrics
+                to determine which one performs best for the problem.
+              </p>
+              <a href="/teachableMachine/1" class="view-projects-btn"
+                >View Projects <i class="fas fa-arrow-right"></i
+              ></a>
+            </div>
+          </div>
+
+          <!-- Step 5: Deployment & Visualization -->
+          <div class="timeline-item left animate-on-scroll">
+            <div class="icon"><i class="fas fa-rocket"></i></div>
+            <div class="timeline-content">
+              <h3>Deployment & Visualization</h3>
+              <p>
+                A successful model is one that's put to use. The model is
+                deployed into production, and insights are communicated through
+                interactive dashboards and visualizations.
+              </p>
+              <a href="{{ url_for('deployment') }}" class="view-projects-btn"
+                >View Projects <i class="fas fa-arrow-right"></i
+              ></a>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer
+      style="
+        border-top: 1px solid var(--border-color);
+        margin-top: 5rem;
+        padding: 1.5rem 0;
+      "
+    >
+      <div
+        style="max-width: 1200px; margin: auto; text-align: center"
+        class="text-muted"
+      >
+        <p>&copy; 2025 Sanjana Devi. All Rights Reserved.</p>
+        <p>
+          Training and Projects powered by
+          <a
+            href="{{ url_for('codroidhub') }}"
+            class="text-secondary"
+            style="text-decoration: none"
+            >CodroidHub</a
+          >.
+        </p>
+      </div>
+    </footer>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        let observer;
+        function observeElements() {
+          if (observer) observer.disconnect();
+          const animatedElements =
+            document.querySelectorAll(".animate-on-scroll");
+          observer = new IntersectionObserver(
+            (entries) => {
+              entries.forEach((entry) => {
+                if (entry.isIntersecting)
+                  entry.target.classList.add("is-visible");
+              });
+            },
+            { threshold: 0.1 }
+          );
+          animatedElements.forEach((el) => observer.observe(el));
+        }
+        observeElements();
+
+        const canvas = document.getElementById("neural-canvas");
+        if (canvas) {
+          const scene = new THREE.Scene();
+          const camera = new THREE.PerspectiveCamera(
+            75,
+            window.innerWidth / window.innerHeight,
+            0.1,
+            1000
+          );
+          const renderer = new THREE.WebGLRenderer({
+            canvas: canvas,
+            alpha: true,
+          });
+          renderer.setSize(window.innerWidth, window.innerHeight);
+          const particles = 1000;
+          const geometry = new THREE.BufferGeometry();
+          const positions = new Float32Array(particles * 3);
+          for (let i = 0; i < positions.length; i += 3) {
+            positions[i] = (Math.random() - 0.5) * 10;
+            positions[i + 1] = (Math.random() - 0.5) * 10;
+            positions[i + 2] = (Math.random() - 0.5) * 10;
+          }
+          geometry.setAttribute(
+            "position",
+            new THREE.BufferAttribute(positions, 3)
+          );
+          const material = new THREE.PointsMaterial({
+            color: 0x00ffff,
+            size: 0.02,
+            transparent: true,
+            blending: THREE.AdditiveBlending,
+          });
+          const points = new THREE.Points(geometry, material);
+          scene.add(points);
+          const lineMaterial = new THREE.LineBasicMaterial({
+            color: 0xff00ff,
+            transparent: true,
+            opacity: 0.1,
+          });
+          const lineGeometry = new THREE.BufferGeometry();
+          lineGeometry.setAttribute(
+            "position",
+            new THREE.BufferAttribute(positions, 3)
+          );
+          const lines = new THREE.LineSegments(lineGeometry, lineMaterial);
+          scene.add(lines);
+          camera.position.z = 5;
+          const mouse = new THREE.Vector2();
+          window.addEventListener("mousemove", (event) => {
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+          });
+          function animate() {
+            requestAnimationFrame(animate);
+            points.rotation.x += 0.0005;
+            points.rotation.y += 0.0005;
+            lines.rotation.copy(points.rotation);
+            camera.position.x += (mouse.x * 0.5 - camera.position.x) * 0.02;
+            camera.position.y += (-mouse.y * 0.5 - camera.position.y) * 0.02;
+            camera.lookAt(scene.position);
+            renderer.render(scene, camera);
+          }
+          animate();
+          window.addEventListener("resize", () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+          });
+        }
+      });
+    </script>
+  </body>
+</html>

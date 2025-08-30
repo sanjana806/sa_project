@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Acquisition - Sanjana Devi</title>
+    
+    <!-- Google Fonts: Orbitron for headings, Rajdhani for body -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Rajdhani:wght@400;600&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Three.js for 3D background -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <style>
+        /* --- FUTURISTIC AIML THEME --- */
+        :root {
+            --bg-dark: #0a0a1a;
+            --primary-magenta: #ff00ff;
+            --secondary-cyan: #00ffff;
+            --text-light: #e0e0e0;
+            --text-muted: #a0a0a0;
+            --card-bg: rgba(20, 20, 40, 0.8); /* More opaque for readability */
+            --border-color: rgba(0, 255, 255, 0.2);
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            font-family: 'Rajdhani', sans-serif; 
+            overflow-x: hidden;
+            margin: 0;
+            background-image: 
+                linear-gradient(rgba(0, 255, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 255, 0.05) 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+
+        h1, h2, h3, h4, h5, h6, .nav-link, .btn-cta {
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        #neural-canvas {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100vh; z-index: -1; opacity: 0.5;
+        }
+
+        header { 
+            position: sticky; 
+            top: 0; 
+            z-index: 50;
+            background-color: rgba(10, 10, 26, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+        }
+        nav {
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            max-width: 1200px; 
+            margin: auto; 
+            padding: 1rem 2rem;
+        }
+        nav a.nav-link {
+            position: relative; 
+            transition: color 0.3s ease; 
+            color: var(--text-muted); 
+            text-decoration: none; 
+            margin: 0 0.75rem;
+        }
+        nav a.nav-link::after {
+            content: ''; 
+            position: absolute; 
+            width: 0; 
+            height: 2px; 
+            bottom: -6px;
+            left: 50%; 
+            transform: translateX(-50%);
+            background: linear-gradient(90deg, var(--primary-magenta), var(--secondary-cyan));
+            transition: width 0.3s ease; 
+            border-radius: 2px;
+        }
+        nav a.nav-link.active, nav a.nav-link:hover {
+            color: white; 
+            text-shadow: 0 0 5px var(--secondary-cyan);
+        }
+        nav a.nav-link.active::after, nav a.nav-link:hover::after { width: 100%; }
+
+        .animate-on-scroll { 
+            opacity: 0; 
+            transform: translateY(30px); 
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out; 
+        }
+        .animate-on-scroll.is-visible { opacity: 1; transform: translateY(0); }
+
+        .text-primary { color: var(--primary-magenta); }
+        .text-secondary { color: var(--secondary-cyan); }
+        .text-muted { color: var(--text-muted); }
+        
+        /* --- FLIP CARD STYLES --- */
+        .project-grid {
+            display: grid;
+            /* UPDATED: Adjusted minmax for larger cards */
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2.5rem;
+        }
+        .flip-card {
+            background-color: transparent;
+            width: 100%;
+            /* UPDATED: Increased card height */
+            height: 420px;
+            perspective: 1000px;
+            cursor: pointer;
+        }
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.8s;
+            transform-style: preserve-3d;
+        }
+        .flip-card.is-flipped .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+        .flip-card-front, .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background-color: var(--card-bg);
+            backdrop-filter: blur(10px);
+            overflow: hidden;
+        }
+        .flip-card-front {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .flip-card-front img {
+            width: 100%;
+            /* UPDATED: Increased image height */
+            height: 250px;
+            object-fit: cover;
+        }
+        .flip-card-front .content {
+            padding: 1.5rem;
+        }
+        .flip-card-front h3 {
+            color: white;
+        }
+        .flip-card-back {
+            transform: rotateY(180deg);
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .flip-card-back h3 {
+            color: var(--secondary-cyan);
+            margin-bottom: 1rem;
+        }
+        .flip-card-back p {
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            /* UPDATED: Increased font size for better readability */
+            font-size: 1rem;
+            line-height: 1.7;
+        }
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary-magenta);
+            color: var(--primary-magenta);
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-outline:hover {
+            background: var(--primary-magenta);
+            color: white;
+            box-shadow: 0 0 20px var(--primary-magenta);
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <canvas id="neural-canvas"></canvas>
+    <header>
+        <nav>
+            <a href="{{ url_for('home') }}" class="nav-link" style="margin-left:0; font-size: 1.5rem; font-weight: bold; color: white;">Sanjana Devi</a>
+            <div style="display:flex; align-items:center;">
+                <a href="{{ url_for('home') }}" class="nav-link">Home</a>
+                <a href="{{ url_for('about_me') }}" class="nav-link">About Me</a>
+                <a href="{{ url_for('journey') }}" class="nav-link active">Journey</a>
+                <a href="{{ url_for('blogs_page') }}" class="nav-link">Blogs</a>
+                <a href="{{ url_for('feedback') }}" class="nav-link">Feedback</a>
+                <a href="{{ url_for('codroidhub') }}" class="nav-link">CodroidHub</a>
+            </div>
+        </nav>
+    </header>
+
+    <main style="max-width: 1200px; margin: auto; padding: 3rem 1.5rem; position: relative; z-index: 10;">
+        <section id="data-acquisition-page">
+            <a href="{{ url_for('journey') }}" class="nav-link text-secondary" style="display: inline-block; margin-bottom: 2rem; font-weight: 600;">
+                <i class="fas fa-arrow-left" style="margin-right: 0.5rem;"></i>Back to Journey
+            </a>
+            <h2 class="animate-on-scroll" style="font-size: 2.25rem; font-weight: bold; text-align: center; margin-bottom: 3rem;">Data Acquisition <span class="text-primary">Projects</span></h2>
+            
+            <div class="project-grid animate-on-scroll">
+                <!-- Project 1 -->
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <img src="\static\image\image1.png" alt="sanjana">
+                            <div class="content">
+                                <h3>Personalized Learning in Education</h3>
+                                <p class="text-muted">Click to flip for details</p>
+                            </div>
+                        </div>
+                        <div class="flip-card-back">
+                            <h3>Personalized Learning in Education</h3>
+                            <p>The Personalized Educational Dataset (Kaggle) contains data on 500 students, including demographics, academic performance, study habits, and learning preferences. It is designed to explore how students learn differently and how data can be used to create personalized learning strategies. This dataset is valuable for building predictive models, analyzing student engagement, and developing AI-powered education solutions.</p>
+                            <a href="https://www.kaggle.com/datasets/spscientist/students-performance-in-exams" target="_blank" class="btn-outline">View on Kaggle <i class="fab fa-kaggle"></i></a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project 2 -->
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <img src="\static\image\image2.jpeg" alt="Sentiment Analysis Data">
+                            <div class="content">
+                                <h3>Early Disease Detection in Healthcare</h3>
+                                <p class="text-muted">Click to flip for details</p>
+                            </div>
+                        </div>
+                        <div class="flip-card-back">
+                            <h3>Early Disease Detection in Healthcare</h3>
+                            <p>Early disease detection focuses on identifying illnesses at their initial stages—often before symptoms become severe. By analyzing medical data such as patient history, lifestyle, genetic information, and diagnostic tests, healthcare systems can predict risks and provide timely interventions. This not only improves patient survival rates but also reduces treatment costs and prevents complications.</p>
+                            <a href="https://www.kaggle.com/datasets/pratyushpuri/heart-disease-dataset-3k-rows-python-code-2025" target="_blank" class="btn-outline">View on Kaggle <i class="fab fa-kaggle"></i></a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Project 3 -->
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <img src="\static\image\image3.png" alt="Financial Market API">
+                            <div class="content">
+                                <h3>Fake News & Misinformation Detection</h3>
+                                <p class="text-muted">Click to flip for details</p>
+                            </div>
+                        </div>
+                        <div class="flip-card-back">
+                            <h3>Fake News & Misinformation Detection</h3>
+                            <p>Fake news and misinformation detection focuses on identifying false or misleading information spread through digital platforms, social media, or news outlets. By using natural language processing (NLP), machine learning, and fact-checking systems, these tools can analyze content credibility, source reliability, and patterns of deception. Early detection helps protect individuals from manipulation, preserves trust in information, and supports informed decision-making in society.</p>
+                            <a href="https://www.kaggle.com/datasets/clmentbisaillon/fake-and-real-news-dataset" target="_blank" class="btn-outline">View on kaggle <i class="fab fa-kaggle"></i></a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- NEW: Project 4 -->
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <img src="\static\image\image.png" alt="SQL Database">
+                            <div class="content">
+                                <h3> Crop Disease Detection in Agriculture</h3>
+                                <p class="text-muted">Click to flip for details</p>
+                            </div>
+                        </div>
+                        <div class="flip-card-back">
+                            <h3>Crop Disease Detection in Agriculture</h3>
+                            <p>Crop disease detection uses data-driven approaches and technologies like image processing, sensors, and machine learning to identify plant diseases at an early stage. Detecting diseases early helps farmers prevent large-scale crop losses, improve yield quality, and reduce the overuse of pesticides. This ensures food security, sustainable farming, and higher profitability in agriculture.</p>
+                            <a href="https://www.kaggle.com/datasets/kunshbhatia/crop-production-data-raw-refined" target="_blank" class="btn-outline">View on Kaggle <i class="fab fa-kaggle"></i></a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    </main>
+
+    <footer style="border-top: 1px solid var(--border-color); margin-top: 5rem; padding: 1.5rem 0;">
+        <div style="max-width: 1200px; margin: auto; text-align: center;" class="text-muted">
+            <p>&copy; 2025 Sanjana Devi. All Rights Reserved.</p>
+            <p>Training and Projects powered by <a href="codroidhub.html" class="text-secondary" style="text-decoration: none; hover:underline;">CodroidHub</a>.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- FLIP CARD LOGIC ---
+            const flipCards = document.querySelectorAll('.flip-card');
+            flipCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    card.classList.toggle('is-flipped');
+                });
+            });
+
+            // --- ANIMATIONS & 3D BACKGROUND ---
+            let observer;
+            function observeElements() {
+                if (observer) observer.disconnect();
+                const animatedElements = document.querySelectorAll('.animate-on-scroll');
+                observer = new IntersectionObserver(entries => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) entry.target.classList.add('is-visible');
+                    });
+                }, { threshold: 0.1 });
+                animatedElements.forEach(el => observer.observe(el));
+            }
+            observeElements();
+
+            const canvas = document.getElementById('neural-canvas');
+            if (canvas) {
+                const scene = new THREE.Scene();
+                const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+                const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true });
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                const particles = 1000;
+                const geometry = new THREE.BufferGeometry();
+                const positions = new Float32Array(particles * 3);
+                for (let i = 0; i < positions.length; i += 3) {
+                    positions[i] = (Math.random() - 0.5) * 10;
+                    positions[i + 1] = (Math.random() - 0.5) * 10;
+                    positions[i + 2] = (Math.random() - 0.5) * 10;
+                }
+                geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+                const material = new THREE.PointsMaterial({ color: 0x00ffff, size: 0.02, transparent: true, blending: THREE.AdditiveBlending });
+                const points = new THREE.Points(geometry, material);
+                scene.add(points);
+                const lineMaterial = new THREE.LineBasicMaterial({ color: 0xff00ff, transparent: true, opacity: 0.1 });
+                const lineGeometry = new THREE.BufferGeometry();
+                lineGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+                const lines = new THREE.LineSegments(lineGeometry, lineMaterial);
+                scene.add(lines);
+                camera.position.z = 5;
+                const mouse = new THREE.Vector2();
+                window.addEventListener('mousemove', (event) => {
+                    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+                    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+                });
+                function animate() {
+                    requestAnimationFrame(animate);
+                    points.rotation.x += 0.0005;
+                    points.rotation.y += 0.0005;
+                    lines.rotation.copy(points.rotation);
+                    camera.position.x += (mouse.x * 0.5 - camera.position.x) * 0.02;
+                    camera.position.y += (-mouse.y * 0.5 - camera.position.y) * 0.02;
+                    camera.lookAt(scene.position);
+                    renderer.render(scene, camera);
+                }
+                animate();
+                window.addEventListener('resize', () => {
+                    camera.aspect = window.innerWidth / window.innerHeight;
+                    camera.updateProjectionMatrix();
+                    renderer.setSize(window.innerWidth, window.innerHeight);
+                });
+            }
+        });
+    </script>
+</body>
+</html>
