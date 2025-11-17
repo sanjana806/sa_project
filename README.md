@@ -69,8 +69,6 @@ sanjana codroidhub.com
 **College:** *Ambala College of Engineering and Applied research*
 **University:** *KUK*
 **Batch:** *2024–2028*
-![4b9fc3a3-7c77-4289-b965-425c1e26b955](https://github.com/user-attachments/assets/8d6ef91e-f81a-4c82-aa7f-8c48612c42d8)
-
 ---
 
 ## 📜 **Certificate**
@@ -81,8 +79,7 @@ sanjana codroidhub.com
 ## 🧑‍💻 **Created By**
 
 **Sanjana Devi**
-📧 Email: *[yourmail@example.com](mailto:yourmail@example.com)*
-🔗 GitHub: *github.com/yourusername*
-🔗 LinkedIn: *linkedin.com/in/yourprofile*
+📧 Email: *sanjanadevibihana@gmail.com*
+🔗 LinkedIn: *https://www.linkedin.com/in/sanjana-devi-a95595339/*
 
 ---
