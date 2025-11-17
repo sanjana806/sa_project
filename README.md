@@ -47,16 +47,6 @@ The training helped me gain hands-on experience in:
 
 ---
 
-## 📸 **Training Snapshots / Demo**
-
-> *Attach screenshots, project workflow diagrams, certificates, notebook outputs, or GIF animations*
-
-<p align="center">
-  <img src="https://media.giphy.com/media/juua9i2c2fA0AIp2yo/giphy.gif" width="400"/>
-</p>
-
----
-
 ## 🧩 **Modules Covered**
 
 1. **Introduction to Technology / Domain**
@@ -66,59 +56,10 @@ The training helped me gain hands-on experience in:
 5. **Mini Projects**
 6. **Major Project**
 7. **Assessment & Certificate**
-
----
-
-## 🚀 **Projects Completed During Training**
-
-### **📌 Project Title 1**
-- Overview of the project  
-- Tools & technologies used  
-- Output screenshots  
-
-### **📌 Project Title 2**
-- Overview  
-- Skills applied  
-- Final result  
-
----
-
-## 📂 **Report Structure**
-
-```
-
-Summer-Training-Report/
-│── Certificate/
-│── Project-Files/
-│── Screenshots/
-│── Report.pdf
-│── README.md
-
-````
-
 ---
 
 ## ⚙️ **How to View the Training Report**
-
-You can download and view the full report here:
-
-```bash
-git clone https://github.com/username/summer-training-report.git
-````
-
-Or simply open the **Report.pdf** file in the repository.
-
----
-
-## ⭐ **Conclusion**
-
-This training greatly improved my:
-
-* ✔ Technical skills
-* ✔ Confidence
-* ✔ Practical understanding
-* ✔ Industry-level exposure
-
+sanjana codroidhub.com
 ---
 
 ## 👩‍🎓 **Trainee Information**
@@ -128,12 +69,13 @@ This training greatly improved my:
 **College:** *Ambala College of Engineering and Applied research*
 **University:** *KUK*
 **Batch:** *2024–2028*
+![4b9fc3a3-7c77-4289-b965-425c1e26b955](https://github.com/user-attachments/assets/8d6ef91e-f81a-4c82-aa7f-8c48612c42d8)
 
 ---
 
 ## 📜 **Certificate**
+![4b9fc3a3-7c77-4289-b965-425c1e26b955](https://github.com/user-attachments/assets/8d6ef91e-f81a-4c82-aa7f-8c48612c42d8)
 
-> blob:https://web.whatsapp.com/4d36865d-aa08-46d2-9604-df4cf199a4f0
 ---
 
 ## 🧑‍💻 **Created By**
