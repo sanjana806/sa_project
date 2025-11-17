@@ -1,6 +1,6 @@
 ---
 <h1 align="center">
-🌟 <span style="font-size:35px;">Summer Training / Skill Training Report</span> 🌟  
+🌟 <span style="font-size:35px;">Summer Training Report</span> 🌟  
 </h1>
 
 <p align="center">
@@ -68,6 +68,7 @@ sanjana codroidhub.com
 **Course:** *B.Tech – AI & ML *
 **College:** *Ambala College of Engineering and Applied research*
 **University:** *KUK*
+
 **Batch:** *2024–2028*
 ---
 
@@ -80,6 +81,7 @@ sanjana codroidhub.com
 
 **Sanjana Devi**
 📧 Email: *sanjanadevibihana@gmail.com*
+
 🔗 LinkedIn: *https://www.linkedin.com/in/sanjana-devi-a95595339/*
 
 ---
