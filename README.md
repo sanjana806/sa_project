@@ -27,7 +27,7 @@ The training helped me gain hands-on experience in:
 | Field | Information |
 |------|-------------|
 | **Training Program** | Summer Training / Skill Development Program |
-| **Institute / Company** | *Your Institute or Company Name* |
+| ** Company** | *Codroidhub Private Limited* |
 | **Duration** | * 6 Weeks * |
 | **Mode** | * Offline * |
 | **Domain** | *AI/ML / Python .* |
