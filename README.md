@@ -28,10 +28,9 @@ The training helped me gain hands-on experience in:
 |------|-------------|
 | **Training Program** | Summer Training / Skill Development Program |
 | **Institute / Company** | *Your Institute or Company Name* |
-| **Duration** | *e.g., 6 Weeks / 8 Weeks* |
-| **Mode** | *Online / Offline / Hybrid* |
-| **Domain** | *AI/ML / Python / Web Dev / Cyber Security / etc.* |
-| **Mentor / Trainer** | *Name of Trainer / Company Representative* |
+| **Duration** | * 6 Weeks * |
+| **Mode** | * Offline * |
+| **Domain** | *AI/ML / Python .* |
 
 ---
 
